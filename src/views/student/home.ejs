@@ -1,0 +1,135 @@
+<!-- home.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .user-name {
+            font-weight: bold;
+        }
+        .logout-btn, .edit-btn, .cancel-btn, .proceed-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        .logout-btn {
+            background-color: #f44336;
+        }
+        .cancel-btn {
+            background-color: #f44336;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .user-details {
+            margin-top: 20px;
+        }
+        .user-details p {
+            margin: 10px 0;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 150px;
+        }
+        .edit-mode .view-mode {
+            display: none;
+        }
+        .view-mode .edit-mode {
+            display: none;
+        }
+        input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <span class="user-name"><%= user.name %></span>
+        <div>
+            <a href="/edituser">
+                <button id="editBtn" class="edit-btn">Edit Details</button>
+            </a>
+            
+            <form action="/logout" method="POST" style="display: inline;">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Welcome to Your Dashboard</h1>
+        <div id="userDetails" class="user-details view-mode">
+            <h2>Your Details</h2>
+            <div class="view-mode">
+                <p><span class="label">Name:</span> <span id="nameView"><%= user.name %></span></p>
+                <p><span class="label">Email:</span> <span id="emailView"><%= user.email %></span></p>
+                <p><span class="label">Course:</span> <span id="courseView"><%= user.course %></span></p>
+                <p><span class="label">Enrollment Date:</span> <span id="enrollmentDateView"><%= user.enrollmentDate %></span></p>
+            </div>
+            <div class="edit-mode">
+                <form id="editForm">
+                    <p>
+                        <label for="nameEdit" class="label">Name:</label>
+                        <input type="text" id="nameEdit" name="name" value="<%= user.name %>" required>
+                        <span class="error" id="nameError"></span>
+                    </p>
+                    <p>
+                        <label for="emailEdit" class="label">Email:</label>
+                        <input type="email" id="emailEdit" name="email" value="<%= user.email %>" required>
+                        <span class="error" id="emailError"></span>
+                    </p>
+                    <p>
+                        <label for="courseEdit" class="label">Course:</label>
+                        <input type="text" id="courseEdit" name="course" value="<%= user.course %>" required>
+                        <span class="error" id="courseError"></span>
+                    </p>
+                    <p>
+                        <label for="enrollmentDateEdit" class="label">Enrollment Date:</label>
+                        <input type="text" id="enrollmentDateEdit" name="enrollmentDate" value="<%= new Date(user.enrollmentDate).toLocaleDateString('en-GB') %>" required>
+                        <span class="error" id="enrollmentDateError"></span>
+                    </p>
+                    <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
+                    <button type="submit" id="proceedBtn" class="proceed-btn">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 export interface IUser {
     _id ?: string;
     name : string;
-    course : string;
+    course ?: string;
     email : string;
     password : string;
     role : "admin" | "user";

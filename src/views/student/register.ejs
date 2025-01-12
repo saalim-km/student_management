@@ -1,0 +1,126 @@
+<!-- register.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input {
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: -8px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Student Registration</h1>
+    <form id="registerForm" action="/register" method="post" onsubmit="return validateForm()">
+        <input type="text" id="name" name="name" placeholder="Full Name">
+        <span class="error" id="nameError"></span>
+
+        <input type="email" id="email" name="email" placeholder="Email">
+        <span class="error" id="emailError"></span>
+
+        <input type="text" id="course" name="course" placeholder="Course">
+        <span class="error" id="courseError"></span>
+
+        <input type="password" id="password" name="password" placeholder="Password">
+        <span class="error" id="passwordError"></span>
+
+        <button type="submit">Register</button>
+    </form>
+    <a href="/login">
+        <button type="" style="margin-top: 3%; background-color: gray;">Login</button>
+    </a>
+
+    <script>
+        const form = document.getElementById('registerForm');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const courseInput = document.getElementById('course');
+        const passwordInput = document.getElementById('password');
+    
+        const nameError = document.getElementById('nameError');
+        const emailError = document.getElementById('emailError');
+        const courseError = document.getElementById('courseError');
+        const passwordError = document.getElementById('passwordError');
+    
+        function validateName() {
+            if (nameInput.value.length < 3) {
+                nameError.textContent = 'Name must be at least 3 characters long';
+                return false;
+            }
+            nameError.textContent = '';
+            return true;
+        }
+    
+        function validateEmail() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput.value)) {
+                emailError.textContent = 'Please enter a valid email address';
+                return false;
+            }
+            emailError.textContent = '';
+            return true;
+        }
+    
+        function validateCourse() {
+            if (courseInput.value.length < 2) {
+                courseError.textContent = 'Please enter a valid course name';
+                return false;
+            }
+            courseError.textContent = '';
+            return true;
+        }
+    
+        function validatePassword() {
+            if (passwordInput.value.length < 6) {
+                passwordError.textContent = 'Password must be at least 6 characters long';
+                return false;
+            }
+            passwordError.textContent = '';
+            return true;
+        }
+    
+        function validateForm() {
+            // Run all validation functions
+            const isNameValid = validateName();
+            const isEmailValid = validateEmail();
+            const isCourseValid = validateCourse();
+            const isPasswordValid = validatePassword();
+    
+            // Allow form submission regardless of validation results
+            return isNameValid && isEmailValid && isCourseValid && isPasswordValid;
+        }
+    
+        nameInput.addEventListener('input', validateName);
+        emailInput.addEventListener('input', validateEmail);
+        courseInput.addEventListener('input', validateCourse);
+        passwordInput.addEventListener('input', validatePassword);
+    </script>
+    
+</body>
+</html>

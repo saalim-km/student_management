@@ -1,0 +1,120 @@
+<!-- login.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input {
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: -8px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Student Login</h1>
+    <form id="loginForm">
+        <input type="email" id="email" name="email" placeholder="Email">
+        <span class="error" id="emailError"></span>
+
+        <input type="password" id="password" name="password" placeholder="Password">
+        <span class="error" id="passwordError"></span>
+
+        <button type="submit">Login</button>
+        <span class="error" id="loginError" style="margin-top: 4%;"></span>
+    </form>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+        const loginError = document.getElementById('loginError');
+
+        function validateEmail() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput.value)) {
+                emailError.textContent = 'Please enter a valid email address';
+                return false;
+            }
+            emailError.textContent = '';
+            return true;
+        }
+
+        function validatePassword() {
+            if (passwordInput.value.length < 6) {
+                passwordError.textContent = 'Password must be at least 6 characters long';
+                return false;
+            }
+            passwordError.textContent = '';
+            return true;
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+
+            const isValidEmail = validateEmail();
+            const isValidPassword = validatePassword();
+
+            if (!isValidEmail || !isValidPassword) {
+                return;
+            }
+
+            const loginData = {
+                email: emailInput.value,
+                password: passwordInput.value,
+            };
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(loginData),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    loginError.textContent = errorData.message || 'Login failed. Please try again.';
+                } else {
+                    // Successful login
+                    window.location.href = '/home';
+                }
+            } catch (error) {
+                loginError.textContent = 'An unexpected error occurred. Please try again.';
+                console.error('Error:', error);
+            }
+        }
+
+        form.addEventListener('submit', handleSubmit);
+        emailInput.addEventListener('input', validateEmail);
+        passwordInput.addEventListener('input', validatePassword);
+    </script>
+</body>
+</html>

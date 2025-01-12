@@ -1,6 +1,6 @@
 import mongoose from "mongoose"; 
 
-class ConnectMongo {
+export class ConnectMongo {
     private databaseUrl : string;
     constructor() {
         if(!process.env.MONGO_URI) {
@@ -15,5 +15,3 @@ class ConnectMongo {
         .catch((error)=> console.log(error));
     }
 }
-
-export default ConnectMongo;

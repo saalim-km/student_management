@@ -1,16 +1,16 @@
-import { studentRepository } from "../../repository/student/Student.repository";
-import { IUser } from "../../interfaces/user.interface";
-import { IStudentRepository } from "../../repository/student/IStudent.repository";
-import { Bcrypt } from "../../utils/bcrypt";
-import { IStudentService } from "./IStudent.service";
+import { studentRepository } from "../../repository/student/Student.repository.js";
+import { IUser } from "../../interfaces/user.interface.js";
+import { IStudentRepository } from "../../repository/student/IStudent.repository.js";
+import { Bcrypt } from "../../utils/bcrypt.js";
+import { IStudentService } from "./IStudent.service.js";
 import { hash } from "bcrypt";
 
 // updateStudent, findAllStudent, findByStudentId, findStudents
 export class StudentService implements IStudentService {
     private studentRepository : IStudentRepository;
     private bcrypt : Bcrypt;
-    constructor() {
-        this.studentRepository = new studentRepository();
+    constructor(StudentRepository : studentRepository) {
+        this.studentRepository = StudentRepository;
         this.bcrypt = new Bcrypt();
     }
 
@@ -31,17 +31,18 @@ export class StudentService implements IStudentService {
     }
 
     async isStudentExist(email: string, password: string): Promise<IUser> {
-        if(!email) {
-            throw new Error('Email is required');
+        const isExist = await this.studentRepository.findStudentByEmail(email);
+        if(!isExist) {
+            throw new Error("student not found");
         }
-        if(!password) {
-            throw new Error('Password is required');
+        const isPasswordMatch = await this.bcrypt.comparePassword(
+            password,
+            isExist.password
+        )
+        if(!isPasswordMatch) {
+            throw new Error("paswword is not matching");
         }
-        const data = {
-            email : email,
-            password : password,
-        }
-        return await this.studentRepository.findStudent(data);
+        return isExist;
     }
 
     async updateStudent(id: string, student: IUser): Promise<IUser | null> {
@@ -51,19 +52,42 @@ export class StudentService implements IStudentService {
         if(!student) {
             throw  new Error('data required for updating');
         }
-        const hashedPassword = await this.bcrypt.hashPassword(student.password);
-        const studentDataWithNewPassword = {
-            ...student,
-            hashedPassword
+        console.log('update student here');
+        console.log(student);
+
+        if(!student.password) {
+            const updatedStudent = await this.studentRepository.updateStudentById(
+                id,
+                student,
+            );
+
+            console.log(updatedStudent);
+            if(!updatedStudent) {
+                throw new Error('student not found');
+            }
+
+            return updatedStudent;
+        }else {
+            const hashedPassword = await this.bcrypt.hashPassword(student.password);
+            console.log('hased password' , hashedPassword);
+
+            const studentDataWithNewPassword = {
+                ...student,
+            }
+            studentDataWithNewPassword.password = hashedPassword;
+
+            console.log('after addign the hashed passowrd to object',studentDataWithNewPassword);
+            const updatedStudent = await this.studentRepository.updateStudentById(
+                id,
+                studentDataWithNewPassword,
+            );
+            
+            if(!updatedStudent) {
+                throw new Error('student not found');
+            }
+
+            return updatedStudent;
         }
-        const updatedStudent = await this.studentRepository.updateStudent(
-            id,
-            studentDataWithNewPassword,
-        );
-        if(!updatedStudent) {
-            throw new Error('student not found');
-        }
-        return updatedStudent;
     }   
 
     async findById(id: string): Promise<IUser | null> {
@@ -77,8 +101,12 @@ export class StudentService implements IStudentService {
         return studentData;
     }
 
-    async findUser(student: Partial<IUser>): Promise<IUser> {
-        return await this.studentRepository.findStudent(student);
+    async findByEmail(email: string): Promise<IUser> {
+        const isExist = await this.studentRepository.findStudentByEmail(email);
+        if(!isExist) {
+            throw new Error("student not found");
+        }
+        return isExist;
     }
 
 }

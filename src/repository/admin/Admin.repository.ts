@@ -1,6 +1,6 @@
-import userModel from "../../models/user.model";
-import { IAdminRepository } from "./IAdmin.repository";
-import { IUser } from "../../interfaces/user.interface";
+import userModel from "../../models/user.model.js";
+import { IAdminRepository } from "./IAdmin.repository.js";
+import { IUser } from "../../interfaces/user.interface.js";
 
 export class AdminRepository implements IAdminRepository {
     async addUser(user: IUser): Promise<IUser> {
@@ -9,10 +9,16 @@ export class AdminRepository implements IAdminRepository {
     async findStudentByIdAndDelete(id: string): Promise<IUser | null> {
         return await userModel.findByIdAndDelete(id);
     }
-    async findUserWithEmail(email: string): Promise<IUser | null> {
+    async findUserWithEmail(email: string): Promise<IUser[] | null> {
         return await userModel.find({email});
     }
-    async getAllStudents(): Promise<IUser> {
+    async getAllStudents(): Promise<IUser[]> {
         return await userModel.find();
+    }
+    async updateUserById(id: string, student: Partial<IUser>): Promise<IUser | null> {
+        return await userModel.findByIdAndUpdate(id , student);
+    }
+    async findStudentById(id: string): Promise<IUser | null> {
+        return await userModel.findById(id);
     }
 }
