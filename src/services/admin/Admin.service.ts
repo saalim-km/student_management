@@ -10,11 +10,15 @@ export class AdminService implements  IAdminservice{
         this.AdminRepository = AdminRepository;
     }
 
+    async createStudent(student: IUser): Promise<IUser> {
+        return await this.AdminRepository.addUser(student);
+    }
+
     async getAllstudent(): Promise<IUser[]> {
         return await this.AdminRepository.getAllStudents();
     }
 
-    async findStudentByEmail(email: string): Promise<IUser[] | null> {
+    async findStudentByEmail(email: string): Promise<IUser | null> {
         if(!email) {
             throw new Error("email is required");
         }

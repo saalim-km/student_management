@@ -9,11 +9,11 @@ export class AdminRepository implements IAdminRepository {
     async findStudentByIdAndDelete(id: string): Promise<IUser | null> {
         return await userModel.findByIdAndDelete(id);
     }
-    async findUserWithEmail(email: string): Promise<IUser[] | null> {
-        return await userModel.find({email});
+    async findUserWithEmail(email: string): Promise<IUser | null> {
+        return await userModel.findOne({email : email});
     }
     async getAllStudents(): Promise<IUser[]> {
-        return await userModel.find();
+        return await userModel.find({role : {$ne : "admin"}});
     }
     async updateUserById(id: string, student: Partial<IUser>): Promise<IUser | null> {
         return await userModel.findByIdAndUpdate(id , student);

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import { StudentService } from "../../services/student/Student.service.js";
 import { IStudentService } from "../../services/student/IStudent.service.js";
 import { IUser } from "../../interfaces/user.interface.js";
@@ -114,9 +114,16 @@ export class StudentController {
         throw new Error("Invalid email or password");
       }
 
-      req.session.student = student._id;
+      console.log(student);
+      
+      if(student.role === 'user'){
+        req.session.student = student._id;
+        res.json({ok : true });
+      }else{
+        req.session.admin = student._id;
+        res.json({ok : true });
+      }
 
-      res.redirect('/home');
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }

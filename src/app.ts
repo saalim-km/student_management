@@ -35,8 +35,10 @@ export class App {
     private setViewEngine() {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
-        this.app.set("views",path.join(__dirname,"views/student"));
-        this.app.set("views",path.join(__dirname,"views/admin"));
+        this.app.set("views",[
+            path.join(__dirname,"views/student"),
+            path.join(__dirname,"views/admin")
+        ]);
         this.app.set("view engine","ejs");
     }
 
@@ -70,6 +72,7 @@ export class App {
         const studentRoute = new UserRoute(studentController);
         this.app.use('/',studentRoute.getRouter());
     }
+
     private setAdminRoute() {
         const adminRepository = new AdminRepository();
         const adminService = new AdminService(adminRepository);

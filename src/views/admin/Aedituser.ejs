@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .cancel-btn {
+            background-color: #f44336;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit User Details</h1>
+        <form id="editUserForm" action="/edituser" method="POST">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="<%= user.name %>" required>
+            <span class="error" id="nameError"></span>
+
+            <label for="email">Email:</label>
+            <input type="email" name="email" value="<%= user.email %>" readonly>
+
+            <label for="course">Course:</label>
+            <input type="text" id="course" name="course" value="<%= user.course %>" required>
+            <span class="error" id="courseError"></span>
+
+            <label for="password">New Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter new password">
+            <span class="error" id="passwordError"></span>
+
+            <div style="display: flex; justify-content: space-between;">
+                <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
+                <button type="submit">Save Changes</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('editUserForm');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const nameInput = document.getElementById('name');
+        const courseInput = document.getElementById('course');
+        const passwordInput = document.getElementById('password');
+
+        const nameError = document.getElementById('nameError');
+        const courseError = document.getElementById('courseError');
+        const passwordError = document.getElementById('passwordError');
+
+        // Cancel button redirects to the dashboard
+        cancelBtn.addEventListener('click', () => {
+            window.location.href = '/home';
+        });
+
+        // Validate form before submission
+        form.addEventListener('submit', (e) => {
+            let isValid = true;
+
+            if (nameInput.value.trim() === '') {
+                nameError.textContent = 'Name is required';
+                isValid = false;
+            } else {
+                nameError.textContent = '';
+            }
+
+            if (courseInput.value.trim() === '') {
+                courseError.textContent = 'Course is required';
+                isValid = false;
+            } else {
+                courseError.textContent = '';
+            }
+
+            if (passwordInput.value.trim() !== '' && passwordInput.value.trim().length < 6) {
+                passwordError.textContent = 'Password must be at least 6 characters long';
+                isValid = false;
+            } else {
+                passwordError.textContent = '';
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

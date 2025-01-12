@@ -1,0 +1,174 @@
+<!-- register.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Student</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input {
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: -8px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Add student</h1>
+    <form id="registerForm">
+        <input type="text" id="name" name="name" placeholder="Full Name">
+        <span class="error" id="nameError"></span>
+
+        <input type="email" id="email" name="email" placeholder="Email">
+        <span class="error" id="emailError"></span>
+
+        <input type="text" id="course" name="course" placeholder="Course">
+        <span class="error" id="courseError"></span>
+
+        <input type="password" id="password" name="password" placeholder="Password">
+        <span class="error" id="passwordError"></span>
+
+        <button type="submit">Register</button>
+    </form>
+    <a href="/admin/dashboard">
+        <button type="" style="margin-top: 3%; background-color: gray;">go back</button>
+    </a>
+
+    <script>
+        const form = document.getElementById('registerForm');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const courseInput = document.getElementById('course');
+        const passwordInput = document.getElementById('password');
+    
+        const nameError = document.getElementById('nameError');
+        const emailError = document.getElementById('emailError');
+        const courseError = document.getElementById('courseError');
+        const passwordError = document.getElementById('passwordError');
+    
+        // Validation functions
+        function validateName() {
+            if (nameInput.value.length < 3) {
+                nameError.textContent = 'Name must be at least 3 characters long';
+                return false;
+            }
+            nameError.textContent = '';
+            return true;
+        }
+    
+        function validateEmail() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput.value)) {
+                emailError.textContent = 'Please enter a valid email address';
+                return false;
+            }
+            emailError.textContent = '';
+            return true;
+        }
+    
+        function validateCourse() {
+            if (courseInput.value.length < 2) {
+                courseError.textContent = 'Please enter a valid course name';
+                return false;
+            }
+            courseError.textContent = '';
+            return true;
+        }
+    
+        function validatePassword() {
+            if (passwordInput.value.length < 6) {
+                passwordError.textContent = 'Password must be at least 6 characters long';
+                return false;
+            }
+            passwordError.textContent = '';
+            return true;
+        }
+    
+        function validateForm() {
+            // Run all validation functions
+            const isNameValid = validateName();
+            const isEmailValid = validateEmail();
+            const isCourseValid = validateCourse();
+            const isPasswordValid = validatePassword();
+    
+            return isNameValid && isEmailValid && isCourseValid && isPasswordValid;
+        }
+    
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent the default form submission
+    
+            // Validate the form
+            if (!validateForm()) {
+                return;
+            }
+    
+            // Get form data
+            const studentData = {
+                name: nameInput.value,
+                email: emailInput.value,
+                course: courseInput.value,
+                password: passwordInput.value,
+            };
+    
+            try {
+                // Make an API call
+                const response = await fetch('/admin/addstudent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(studentData),
+                });
+    
+                const result = await response.json();
+    
+                if (!response.ok) {
+                    // Show error message
+                    if (result.error) {
+                        alert(`Error: ${result.error}`);
+                    } else {
+                        alert('An unknown error occurred');
+                    }
+                } else {
+                    // Redirect on success
+                    alert('Student added successfully!');
+                    window.location.href = '/admin/dashboard';
+                }
+            } catch (error) {
+                console.error('Error adding student:', error);
+                alert('Failed to add student. Please try again later.');
+            }
+        });
+    
+        // Add input event listeners
+        nameInput.addEventListener('input', validateName);
+        emailInput.addEventListener('input', validateEmail);
+        courseInput.addEventListener('input', validateCourse);
+        passwordInput.addEventListener('input', validatePassword);
+    </script>
+    
+    
+</body>
+</html>
