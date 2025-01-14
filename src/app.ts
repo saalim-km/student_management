@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import { UserRoute } from "./routes/User.route.js";
 import { AdminRoute } from "./routes/Admin.route.js";
 import session from 'express-session'; // Import express-session;
-import flash from 'connect-flash';
 import path from "path";
 import { fileURLToPath } from "url";
 import nocache from "nocache"
@@ -52,16 +51,6 @@ export class App {
             resave : false,
             saveUninitialized : true
         }));
-
-        //? Flash message
-        this.app.use(flash());
-
-        // Middleware to make flash messages available in the view templates
-        this.app.use((req: Request, res: Response, next: () => void) => {
-            res.locals.success_msg = req.flash('success_msg');
-            res.locals.error_msg = req.flash('error_msg');
-            next();
-        });
         this.app.use(nocache());
     }
 
@@ -73,6 +62,7 @@ export class App {
         this.app.use('/',studentRoute.getRouter());
     }
 
+    
     private setAdminRoute() {
         const adminRepository = new AdminRepository();
         const adminService = new AdminService(adminRepository);

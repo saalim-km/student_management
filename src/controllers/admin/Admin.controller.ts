@@ -2,14 +2,15 @@ import { Request, Response } from "express";
 import { AdminService } from "../../services/admin/Admin.service.js";
 import { IAdminservice } from "../../services/admin/IAdmin.service.js";
 import { IUser } from "../../interfaces/user.interface.js";
-import { isErrored } from "stream";
-import { error } from "console";
+import { Bcrypt } from "../../utils/bcrypt.js"
 
 export class AdminController {
   private adminService: IAdminservice;
+  private bcrypt : Bcrypt;
 
   constructor(AdminService: AdminService) {
     this.adminService = AdminService;
+    this.bcrypt = new Bcrypt();
   }
 
   public async addStudent(req: Request, res: Response) {
@@ -46,8 +47,16 @@ export class AdminController {
         return res.status(400).json({ error: "Email already exists" });
       }
 
+      //hash password
+      const hashedPassword = await this.bcrypt.hashPassword(student.password);
+      const newUser = {
+        ...student,
+      }
+      newUser.password = hashedPassword;
+      console.log(newUser);
+
       // Create new student
-      const newStudent = await this.adminService.createStudent(student);
+      const newStudent = await this.adminService.createStudent(newUser);
       console.log(newStudent);
 
       // Respond with success
@@ -62,6 +71,45 @@ export class AdminController {
     }
   }
 
+  public async getEdit(req : Request , res : Response) {
+    try {
+      if(!req.session.admin) {
+        res.redirect('/admin/login');
+      }else {
+        const id = req.params.id;
+        const studentDetails = await this.adminService.findStudentById(id);
+        res.render('Aedituser',{user : studentDetails});
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public async postEdit(req : Request , res : Response) {
+    try {
+      if(!req.session.admin){
+        res.redirect('/admin/login')
+      }else {
+        const updatedData = JSON.parse(JSON.stringify(req.body))
+        console.log(updatedData);
+
+        if(!updatedData.password || updatedData.password == ''){
+          delete updatedData.password;
+        }
+
+        const userId = updatedData._id;
+        delete updatedData._id;
+        console.log('user id from ejs',userId);
+
+        console.log('updated data from postEdit admin : ',updatedData);
+
+        await this.adminService.updateStudentById(userId, updatedData);
+        res.redirect('/admin/dashboard');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   public async logout(req: Request, res: Response) {
     try {
       if (req.session) {

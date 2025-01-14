@@ -53,7 +53,15 @@ export class AdminRoute {
 
     this.adminRouter.post('/addstudent', async (req: Request, res: Response) => {
       await this.adminController.postAddStudent(req, res);
-  });
+    });
+
+    this.adminRouter.get('/edit/:id',(req:Request , res:Response)=>
+      this.adminController.getEdit(req,res)
+    );  
+
+    this.adminRouter.post('/edit',(req : Request , res : Response)=>
+      this.adminController.postEdit(req,res)
+    );
   
   }
 
